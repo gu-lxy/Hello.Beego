@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"HelloBeego/models"
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
+	"io/ioutil"
 )
 
 type MainController struct {
@@ -40,4 +43,19 @@ func (c *MainController) Post() {
 	c.Ctx.ResponseWriter.Write([]byte("恭喜你，数据准确"))
 	c.Data["Email"] = "astaxie@gmail.com"
 	c.TplName = "index.tpl"
+}
+func (c *MainController) post()  {
+	dataByes, err := ioutil.ReadAll(c.Ctx.Request.Body)
+	if err != nil {
+		 c.Ctx.WriteString("数据接收失败，请重试")
+		return
+	}
+	var person models.Person
+	err = json.Unmarshal(dataByes,&person)
+	if err != nil {
+		c.Ctx.WriteString("数据解析失败，请重试")
+	}
+	fmt.Println("用户名：",person.User)
+	c.Ctx.WriteString("用户名是："+person.User)
+
 }
